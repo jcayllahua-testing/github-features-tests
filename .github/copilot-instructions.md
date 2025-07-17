@@ -1,10 +1,10 @@
+When performing a code review, only review based on the rules described in this document. Do not comment on other topics outside of these guidelines.
+
 When performing a code review, respond in Spanish.
 
-When performing a code review, verify for best practices in reactive java programming like:
-- check for use of block() method, it shouldn't be used.
+When performing a code review, check for best practices in reactive Java programming, including:
+- The use of `block()` should be avoided in reactive flows.
 
-When performing a code review, mention that if you have any doubs about the rules in "jcayllahua organization" check this link [abc.com](https://abc.com/)
+When performing a code review, if you are unsure about any rule related to the "jcayllahua" organization, mention this link for reference: [https://abc.com](https://abc.com)
 
 When creating a pull request, generate the summary in Spanish.
-
-You must not check for others things apart from the described in this document.
