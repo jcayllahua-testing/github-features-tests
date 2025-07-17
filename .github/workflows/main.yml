@@ -1,0 +1,84 @@
+# .github/workflows/validate_copilot_comments.yml
+name: Validate Copilot Comments Resolved
+
+# This workflow runs on pull requests and when review comments are made.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Grant permissions for the workflow to read pull request data.
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  check-copilot-comments:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out the repository's code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Use a script to query the GitHub GraphQL API
+      # This is the core of the logic. It finds all review threads on the PR,
+      # filters them to find those started by Copilot, and checks their resolution status.
+      - name: Check for unresolved Copilot comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // The author login for the GitHub Copilot bot
+            const COPILOT_BOT_LOGIN = 'github-copilot[bot]';
+
+            // GraphQL query to get all review threads and their resolution status
+            const query = `
+              query($owner: String!, $repo: String!, $pull_number: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $pull_number) {
+                    reviewThreads(first: 100) {
+                      nodes {
+                        isResolved
+                        comments(first: 1) {
+                          nodes {
+                            author {
+                              login
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }`;
+
+            const variables = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            };
+
+            console.log(`Checking PR #${variables.pull_number} in ${variables.owner}/${variables.repo}`);
+
+            // Execute the GraphQL query
+            const result = await github.graphql(query, variables);
+
+            const threads = result.repository.pullRequest.reviewThreads.nodes;
+            if (!threads || threads.length === 0) {
+              console.log('No review threads found on this PR.');
+              return; // Success
+            }
+
+            // Filter for threads started by Copilot that are NOT resolved
+            const unresolvedCopilotThreads = threads.filter(thread => {
+              const firstCommentAuthor = thread.comments.nodes[0]?.author.login;
+              // A thread is a "Copilot thread" if its first comment is from the bot
+              return firstCommentAuthor === COPILOT_BOT_LOGIN && !thread.isResolved;
+            });
+
+            if (unresolvedCopilotThreads.length > 0) {
+              const count = unresolvedCopilotThreads.length;
+              const message = `Found ${count} unresolved review thread(s) from GitHub Copilot. Please resolve all comments before merging.`;
+              console.error(message);
+              core.setFailed(message); // This makes the workflow fail
+            } else {
+              console.log('All GitHub Copilot review threads have been resolved. Good to go!');
+            }
