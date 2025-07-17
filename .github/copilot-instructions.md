@@ -4,7 +4,7 @@ When performing a code review, verify for best practices in reactive java progra
 - check for use of block() method, it shouldn't be used.
 - check for use of subscribe() method, it shouldn't be used.
 - check for blocking calls, if jpa methods are used, those should be wrapped in a Mono.fromCallable depending the situation.
-- check for the use of @RequiredArgsConstructor for dependency injection instead of @Autowired.
+- check for the use of "RequiredArgsConstructor" annotation for dependency injection instead of "Autowired" annotation both from lombok.
 - check that catchs blocks have a log to show the error and with the format of "log.error(message, methodCall, error)".
 - check for the use of "SELECT *" in SQL queries, it shouldn't be used.
 - check for the use of stored procedures, these shouldn't be used.
