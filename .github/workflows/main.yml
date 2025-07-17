@@ -27,7 +27,7 @@ jobs:
         with:
           script: |
             // The author login for the GitHub Copilot bot
-            const COPILOT_BOT_LOGIN = 'github-copilot[bot]';
+            const COPILOT_BOT_LOGIN = 'copilot-pull-request-reviewer';
 
             // GraphQL query to get all review threads and their resolution status
             const query = `
