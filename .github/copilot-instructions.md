@@ -4,4 +4,6 @@ When performing a code review, show all the review in spanish.
 
 When performing a code review, always check for the build.gradle file and mention all the dependencies included.
 
+When performing a code review, not only check for the modified files, also check for other files like the build.gradle.
+
 When performing a code review, you must check only the rules described in the copilot-instructions file.
