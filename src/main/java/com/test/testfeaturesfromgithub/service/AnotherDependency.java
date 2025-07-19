@@ -5,6 +5,6 @@ import org.springframework.stereotype.Service;
 @Service
 class AnotherDependency {
     public void performAction() {
-        System.out.println("Action performed");
+        System.out.println("Action performed well");
     }
 }
